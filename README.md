@@ -1,6 +1,7 @@
-#WeSchedule
+# WeSchedule
 
-A simple tool to find the best time for group study sessions based on availability.
+The simpler way to align schedules and achieve more together
+A command-line tool designed to help users find overlapping availability for group events, accommodate custom event durations, and generate Google Calendar invites. It provides an efficient and user-friendly solution for scheduling tasks and study sessions.
 
 ## Features
 - Enter individual availability.
