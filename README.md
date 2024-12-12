@@ -24,3 +24,20 @@ A simple tool to find the best time for group study sessions based on availabili
 ## Website
 Visit our website:
 https://egpz.github.io/weschedule.github.io/
+
+## Download using Github Release
+
+### For Python Package:
+
+
+``` bash
+   Copy code
+   pip install study-group-scheduler
+```
+
+### For Executable:
+Download the binary from the Releases page.
+Run the program:
+``` bash
+Copy code
+./scheduler
