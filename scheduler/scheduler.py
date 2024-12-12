@@ -20,17 +20,20 @@ def collect_availability():
             print("Invalid format. Try again.")
     return pd.DataFrame(availability)
 
-def find_overlap(group_availability):
+def find_overlap(group_availability, event_duration=None):
     """
     Finds overlapping time slots in group availability data.
-    Input: pandas DataFrame with 'day', 'start', and 'end' columns.
-    Output: pandas DataFrame with overlapping times.
+    Input:
+        - group_availability: pandas DataFrame with 'day', 'start', and 'end' columns.
+        - event_duration: (int or None) Event duration in hours. If None, no intervals are calculated.
+    Output:
+        pandas DataFrame with overlapping times or intervals of the given duration.
     """
     grouped = group_availability.groupby('day')
     results = []
+    fallback_results = []  # To store shorter overlaps
     for day, slots in grouped:
         slots = slots.sort_values(by='start').reset_index(drop=True)
-        # Initialize overlap range with the first slot
         overlap_start = slots.iloc[0]['start']
         overlap_end = slots.iloc[0]['end']
 
@@ -38,26 +41,61 @@ def find_overlap(group_availability):
             current_start = slots.iloc[i]['start']
             current_end = slots.iloc[i]['end']
 
-            # Update the overlap range
+            # Update overlap range
             overlap_start = max(overlap_start, current_start)
             overlap_end = min(overlap_end, current_end)
 
-            # If there is no overlap, reset the range
             if overlap_start >= overlap_end:
                 overlap_start = current_start
                 overlap_end = current_end
             else:
-                # Store the overlapping range
-                results.append({'day': day, 'start': overlap_start, 'end': overlap_end})
+                # Store valid intervals if duration is provided
+                if event_duration:
+                    interval_start = overlap_start
+                    while interval_start + event_duration <= overlap_end:
+                        results.append({
+                            'day': day,
+                            'start': interval_start,
+                            'end': interval_start + event_duration
+                        })
+                        interval_start += event_duration
+                    # Store fallback for shorter overlaps if no full-duration matches
+                    if overlap_end - overlap_start > 0:
+                        fallback_results.append({
+                            'day': day,
+                            'start': overlap_start,
+                            'end': overlap_end
+                        })
+                else:
+                    # Store full overlap if no duration is provided
+                    results.append({'day': day, 'start': overlap_start, 'end': overlap_end})
 
-    return pd.DataFrame(results)
-
-
+    # Return results or fallback if no full-duration overlaps are found
+    if results:
+        return pd.DataFrame(results)
+    elif fallback_results:
+        print("\nNo full-duration overlaps found. Suggesting shorter overlap times:")
+        return pd.DataFrame(fallback_results)
+    else:
+        return pd.DataFrame()
 
 def suggest_time():
     """
     Gathers availability from multiple users and suggests the best meeting time.
     """
+    print("\nWhat is the name of the event?")
+    event_name = input("Event name: ")
+    
+    print("\nWould you like to specify a duration for the event? (yes/no)")
+    specify_duration = input().lower()
+    event_duration = None
+    if specify_duration == 'yes':
+        try:
+            event_duration = int(input("Enter the duration in hours: "))
+        except ValueError:
+            print("Invalid input. No duration will be set.")
+            event_duration = None
+    
     print("\nGathering availability for the group.")
     group_availability = pd.DataFrame()
     while True:
@@ -67,15 +105,15 @@ def suggest_time():
         add_more = input("Add another person? (yes/no): ").lower()
         if add_more != 'yes':
             break
+    
     print("\nFinding overlaps...")
-    overlaps = find_overlap(group_availability)
+    overlaps = find_overlap(group_availability, event_duration)
     if overlaps.empty:
-        print("\nNo overlapping times found.")
+        print(f"\nNo overlapping times found for the event '{event_name}'.")
     else:
-        print("\nSuggested times:")
+        print(f"\nSuggested times for the event '{event_name}':")
         for _, row in overlaps.iterrows():
             print(f"{row['day']}: {row['start']}:00 - {row['end']}:00")
 
 if __name__ == "__main__":
     suggest_time()
-
