@@ -21,3 +21,6 @@ A simple tool to find the best time for group study sessions based on availabili
    ```bash
    python scheduler/scheduler.py
 
+## Website
+Visit our website:
+https://egpz.github.io/weschedule.github.io/
