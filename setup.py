@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='study-group-scheduler',
+    name='WeSchedule',
     version='1.0.0',
     packages=find_packages(),
     install_requires=[
@@ -13,6 +13,6 @@ setup(
         ],
     },
     description='A tool to schedule study group sessions based on availability.',
-    author='Your Name',
+    author='egpz',
     license='MIT',
 )
