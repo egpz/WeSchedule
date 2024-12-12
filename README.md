@@ -1,5 +1,5 @@
 # WeSchedule
-
+(I hate using when2meet. So I wanted to start making something better.)
 The simpler way to align schedules and achieve more together
 A command-line tool designed to help users find overlapping availability for group events, accommodate custom event durations, and generate Google Calendar invites. It provides an efficient and user-friendly solution for scheduling tasks and study sessions.
 
@@ -23,7 +23,7 @@ A command-line tool designed to help users find overlapping availability for gro
    python scheduler/scheduler.py
 
 ## Website
-Visit our website:
+Visit the website:
 https://egpz.github.io/weschedule.github.io/
 
 ## Download using Github Release
