@@ -1,4 +1,6 @@
 import pandas as pd
+from calendar_utils import authenticate_google_calendar, create_calendar_event
+from datetime import datetime
 
 def collect_availability():
     """
@@ -81,11 +83,11 @@ def find_overlap(group_availability, event_duration=None):
 
 def suggest_time():
     """
-    Gathers availability from multiple users and suggests the best meeting time.
+    Gathers availability from multiple users and suggests the best meeting time with a specific date.
     """
     print("\nWhat is the name of the event?")
     event_name = input("Event name: ")
-    
+
     print("\nWould you like to specify a duration for the event? (yes/no)")
     specify_duration = input().lower()
     event_duration = None
@@ -95,7 +97,7 @@ def suggest_time():
         except ValueError:
             print("Invalid input. No duration will be set.")
             event_duration = None
-    
+
     print("\nGathering availability for the group.")
     group_availability = pd.DataFrame()
     while True:
@@ -105,15 +107,44 @@ def suggest_time():
         add_more = input("Add another person? (yes/no): ").lower()
         if add_more != 'yes':
             break
-    
+
     print("\nFinding overlaps...")
     overlaps = find_overlap(group_availability, event_duration)
     if overlaps.empty:
         print(f"\nNo overlapping times found for the event '{event_name}'.")
     else:
         print(f"\nSuggested times for the event '{event_name}':")
-        for _, row in overlaps.iterrows():
-            print(f"{row['day']}: {row['start']}:00 - {row['end']}:00")
+        for idx, row in overlaps.iterrows():
+            print(f"{idx + 1}. {row['day']}: {row['start']}:00 - {row['end']}:00")
+
+        # Allow the user to select a time
+        choice = int(input("\nSelect a time slot (enter the number): ")) - 1
+        selected_row = overlaps.iloc[choice]
+
+        # Get attendee emails
+        print("\nEnter the email addresses of attendees (comma-separated):")
+        attendees = input().split(',')
+
+        # Get the date for the event
+        print("\nEnter the date for the event (format: YYYY-MM-DD):")
+        date = input("Date: ")
+        try:
+            # Validate the date
+            datetime.strptime(date, "%Y-%m-%d")
+        except ValueError:
+            print("Invalid date format. Please enter in YYYY-MM-DD format.")
+            return
+
+        # Authenticate and create the event
+        creds = authenticate_google_calendar()
+        create_calendar_event(
+            creds,
+            event_name,
+            f"{selected_row['start']:02d}:00",
+            f"{selected_row['end']:02d}:00",
+            attendees,
+            date
+        )
 
 if __name__ == "__main__":
     suggest_time()
