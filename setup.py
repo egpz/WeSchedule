@@ -16,7 +16,7 @@ setup(
     description='A tool to schedule group study sessions and create calendar events.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    author='Your Name',
+    author='egpz',
     license='MIT',
     classifiers=[
         'Programming Language :: Python :: 3',
