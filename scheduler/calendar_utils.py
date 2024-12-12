@@ -64,3 +64,4 @@ def create_calendar_event(creds, event_name, start_time, end_time, attendees, da
 
     event = service.events().insert(calendarId='primary', body=event).execute()
     print(f"Event created: {event.get('htmlLink')}")
+    
