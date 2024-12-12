@@ -31,7 +31,6 @@ https://egpz.github.io/weschedule.github.io/
 
 
 ``` bash
-   Copy code
    pip install study-group-scheduler
 ```
 
@@ -39,5 +38,4 @@ https://egpz.github.io/weschedule.github.io/
 Download the binary from the Releases page.
 Run the program:
 ``` bash
-Copy code
 ./scheduler
